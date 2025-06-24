@@ -1,7 +1,7 @@
 import pyautogui
 import logging
 import pymssql
-from src.Model.Utilitarios import dict_empresas_banco
+from Utilitarios import dict_empresas_banco
 import traceback
 def Conexao_Banco(empresa):
     print("CONECTANDO  BANCO DA DADOS")

@@ -13,24 +13,26 @@ import calendar
 def webscraping(navegador, empresa, data):
     print(f"PESQUISANDO CF-E {empresa}")
     logging.info(f"PESQUISANDO CF-E {empresa}")
-    data_atual = date.today()
-    semena = date.weekday(date.today())
+    # data_atual = date.today()
+    # semena = date.weekday(date.today())
     mes, ano = data.split("/")
-
-    # Primeira metade do mês
-    inicio_parte1 = datetime.date(int(ano), int(mes), 1)
-    fim_parte1 = datetime.date(int(ano), int(mes), 15)
-
-    # Segunda metade do mês
-    inicio_parte2 = datetime.date(int(ano), int(mes), 16)
     ultimo_dia = calendar.monthrange(int(ano), int(mes))[1]
-    fim_parte2 = datetime.date(int(ano), int(mes), ultimo_dia)
+    # Primeira metade do mês
+    data_pesquisa = []
+    dia_inicio = 1
+    while dia_inicio <= ultimo_dia:
+        dia_fim = min(dia_inicio + 4, ultimo_dia)
+        inicio = datetime.date(int(ano), int(mes), dia_inicio)
+        fim = datetime.date(int(ano), int(mes), dia_fim)
+        
+        data_pesquisa.append({
+            "inicio": inicio.strftime("%d/%m/%Y"),
+            "fim": fim.strftime("%d/%m/%Y")
+        })
+        
+        dia_inicio += 5
 
 
-    data_pesquisa = [
-        {"inicio" : inicio_parte1.strftime("%d/%m/%Y"), 'fim' : fim_parte1.strftime("%d/%m/%Y")},
-        {"inicio" : inicio_parte2.strftime("%d/%m/%Y"), 'fim' : fim_parte2.strftime("%d/%m/%Y")}
-    ]
     #ESPERA DO LINK CONSULTA F-E APARECER NA TELA
     WebDriverWait(navegador, 20).until(ec.visibility_of_element_located((By.XPATH,"/html/body/div[3]/div[2]/div[1]/div/div/ul/li[4]/a")))
     #CLICANDO NO LINK DE CONSULTA F-E
@@ -54,6 +56,7 @@ def webscraping(navegador, empresa, data):
         p.sleep(1.5)
         #BTN CONSULTAR
         navegador.find_element(By.XPATH, "/html/body/div[3]/div[2]/div[2]/div/div/div/div[3]/form/div[6]/div/div/button[1]").click()
+        p.sleep(4)
         #ESPERANDO CARREGAR INFORMAÇOES
         WebDriverWait(navegador, 25).until(ec.visibility_of_element_located((By.XPATH, "/html/body/div[3]/div[2]/div[2]/div/div/div/div[3]/div/h4")))
         p.sleep(1)

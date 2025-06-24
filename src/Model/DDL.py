@@ -1,4 +1,5 @@
-from src.Model.conexao_banco import Conexao_Banco
+from conexao_banco import Conexao_Banco
+from tokenJson import getJson
 import pandas as pd
 import os
 import logging
@@ -6,14 +7,14 @@ import pyautogui as p
 import traceback
 
 
-def Inserir_Dados(empresa):
+def Inserir_Dados(empresa,data_l):
     print(f"INSERIR DADOS NA EMPRESA {empresa}")
     f"INSERIR DADOS NA EMPRESA {empresa}"
     conn, cursor = Conexao_Banco(empresa)
-    df = pd.read_excel(f"{os.getcwd()}//informacoes_{empresa}.xlsx")
-    serie = [str(x) for x in df["Serie"]]
-    data = [str(x[:10]) for x in df["data"]]
-    chave = [str(x) for x in df["chave_cfo"]]
+    df = pd.DataFrame(getJson())
+    serie = [str(x) for x in df["serie"]]
+    data = [str(x[:10]) for x in df["data emissao"]]
+    chave = [str(x) for x in df["chaves"]]
     dados = []
 
     for index in range(len(serie)):
@@ -24,17 +25,17 @@ def Inserir_Dados(empresa):
 
 
     try:
-        cursor.execute("TRUNCATE TABLE MS_CtrlXml")
         cursor.executemany(sql_insert, dados)
         conn.commit()
 
-        print("DADOS INSERIDO COM SUCESSO!!!")
-        logging.info("DADOS INSERIDO COM SUCESSO!!!")
+        # print("DADOS INSERIDO COM SUCESSO!!!")
+        # logging.info("DADOS INSERIDO COM SUCESSO!!!")
 
-        print("EXECUTANDO PROCEDURE")
-        logging.info("EXECUTANDO PROCEDURE")
+        # print("EXECUTANDO PROCEDURE")
+        # logging.info("EXECUTANDO PROCEDURE")
         
-        cursor.execute("UP_Cupons_Divergentes_Xml")  
+        # cursor.execute("UP_Cupons_Divergentes_Xml")
+        cursor.execute("SELECT * FROM MS_CtrlXml ")
         resposta = cursor.fetchall()
         if len(resposta) > 0:
 
@@ -57,7 +58,8 @@ def Inserir_Dados(empresa):
 
 
             df = pd.DataFrame(Dicionario)
-            df.to_excel(f"{os.getcwd()}//informacoes_{empresa}.xlsx", index=False)
+            # df.to_excel(f"C:\\RPA\\RPA_CUPONS_DIVERGENTES_5_ANOS\\divergencias_cupons_banco\\{empresa}_divergencias_cupons_5anos_bancodedaos_{data_l}.xlsx", index=False)
+            df.to_excel(f"C:\\RPA\\RPA_CUPONS_DIVERGENTES_5_ANOS\\divergencias_cupons_banco\\PROCEDURE.xlsx", index=False)
             serie = []
             data =  []
             chave = []
@@ -75,7 +77,7 @@ def Inserir_Dados(empresa):
         cursor.close()
         conn.close()
 if __name__ == "__main__":
-    flag, dados = Inserir_Dados("NISSAN MATRIZ")
+    flag, dados = Inserir_Dados("NOSSAMOTOMATRIZ","21_05_2025")
 
 
 

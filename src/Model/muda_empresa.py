@@ -59,10 +59,10 @@ def muda_empresa(navegador, empresa):
                         handle = navegador.window_handles
                         break
     if handle != "":
-        return handle, ""
+        return handle
     else:
        
-        return "",""                    
+        return "",""
 
 
 
